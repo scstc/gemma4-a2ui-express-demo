@@ -21,6 +21,7 @@
   [device]="store.debug().model?.device"
   [progress]="store.debug().downloadProgress"
   [chromeSelected]="store.mode() === 'chrome'"
+  [remoteSelected]="store.mode() === 'deepseek'"
   [notice]="store.downloadNotice()"
   [detailsUrl]="store.modelDetailsUrl()"
 />

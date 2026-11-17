@@ -1,0 +1,6 @@
+{
+  "/api/deepseek/**": {
+    "target": "http://127.0.0.1:4212",
+    "secure": false
+  }
+}

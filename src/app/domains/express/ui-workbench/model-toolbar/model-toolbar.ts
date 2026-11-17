@@ -20,7 +20,10 @@ export interface ModelOption {
   selector: "app-model-toolbar",
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <span class="local-badge"><span aria-hidden="true">●</span> On device</span>
+    <span class="local-badge"
+      ><span aria-hidden="true">●</span>
+      {{ mode() === "deepseek" ? "Remote API" : "On device" }}</span
+    >
     <label class="model-picker">
       <span class="sr-only">Inference model</span>
       <select

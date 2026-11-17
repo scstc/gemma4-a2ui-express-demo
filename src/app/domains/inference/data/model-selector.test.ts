@@ -29,6 +29,7 @@ function selector() {
     "finetuned-e2b": model("transformers", "downloadable"),
     "webllm-e2b": model("webllm", "downloadable"),
     chrome: model("chrome", "unavailable"),
+    deepseek: model("deepseek", "available"),
   };
   return { models, selector: new ModelSelector(models) };
 }
@@ -56,9 +57,12 @@ describe("model selection", () => {
     browser.select("webllm-e2b");
     expect(await browser.availability()).toBe("downloadable");
     expect(browser.info.backend).toBe("webllm");
+    browser.select("deepseek");
+    expect(await browser.availability()).toBe("available");
+    expect(browser.info.backend).toBe("deepseek");
   });
 
-  it.each(["base", "chrome", "webllm-e2b"] as const)(
+  it.each(["base", "chrome", "webllm-e2b", "deepseek"] as const)(
     "never falls back when %s fails to start",
     async (mode) => {
       const { models, selector: browser } = selector();

@@ -46,7 +46,11 @@ export const DOWNLOAD_NOTICE_ID = "download-notice";
         >
       }
       @case ("available") {
-        <span>Model installed · enable to start</span>
+        <span>{{
+          remoteSelected()
+            ? "Remote API · enable to connect"
+            : "Model installed · enable to start"
+        }}</span>
       }
       @default {
         <span>Preparing the Express catalog…</span>
@@ -67,6 +71,7 @@ export class ModelStatus {
   readonly device = input<string>();
   readonly progress = input(0);
   readonly chromeSelected = input(false);
+  readonly remoteSelected = input(false);
   /** What enabling the model downloads, before it is enabled. */
   readonly notice = input("");
   readonly detailsUrl = input.required<string>();

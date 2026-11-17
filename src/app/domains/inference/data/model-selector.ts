@@ -7,6 +7,7 @@ import {
   transformersModelRoot,
 } from "./transformers/transformers-model";
 import { WebLLMModel } from "./webllm/webllm-model";
+import { DeepSeekModel } from "./deepseek/deepseek-model";
 
 /** The model the user selected, behind one `LocalModel`. Selection is
  * explicit: a model that fails to start never falls back to another. */
@@ -27,6 +28,7 @@ export class ModelSelector implements LocalModel {
         new TransformersModel(undefined, E2B_RETRAIN, root),
       "webllm-e2b": models["webllm-e2b"] ?? new WebLLMModel(),
       chrome: models.chrome ?? new ChromeModel(),
+      deepseek: models.deepseek ?? new DeepSeekModel(),
     };
   }
 

@@ -1,0 +1,2 @@
+# This fixture must match the SDK-generated system prompt byte for byte.
+training/data/system-prompt.txt text eol=lf

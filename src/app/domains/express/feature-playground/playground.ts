@@ -40,6 +40,7 @@ const BACKEND_LABELS: Record<ModelBackend, string> = {
   chrome: "PROMPT API",
   transformers: "TRANSFORMERS.JS",
   webllm: "WEBLLM",
+  deepseek: "DEEPSEEK API",
 };
 
 /** Conversation, Express source, native preview and debugger, side by side;

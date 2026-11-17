@@ -39,7 +39,7 @@ export const EXPRESS_AGENT_ID = "a2ui-1.0";
 const OUTPUT_LIMIT = 60_000;
 
 /**
- * A real AG-UI agent whose inference runs in the browser. It owns the model
+ * An AG-UI agent using the selected inference adapter. It owns the model
  * session (configure, enable, reset, dispose) and runs each request:
  * request turn → validated Express → committed views.
  */
@@ -302,7 +302,7 @@ export class ExpressAgent extends AbstractAgent {
       if (!this.#compiler || !manifest)
         throw new Error("The Express catalog is still loading.");
       if (!this.#modelReady)
-        throw new Error("Enable the browser model before generating.");
+        throw new Error("Enable the selected model before generating.");
       // Application context is run data, never system instructions.
       const context = input.context.map(({ description, value }) => ({
         description,
@@ -427,7 +427,7 @@ export class ExpressAgent extends AbstractAgent {
       if (!events.isCurrent()) return events.finished();
       events.say(
         "status",
-        `Stopped. ${previews.shown ? "The partial preview from this run was withdrawn" : "Nothing from this run was published"}, so the preview and the values you entered are unchanged. Enable the local model again to continue.`,
+        `Stopped. ${previews.shown ? "The partial preview from this run was withdrawn" : "Nothing from this run was published"}, so the preview and the values you entered are unchanged. Enable the selected model again to continue.`,
       );
       events.patch({
         ...(this.#enableController === enabling ? { availability } : {}),
@@ -441,7 +441,7 @@ export class ExpressAgent extends AbstractAgent {
       "status",
       error instanceof InvalidOutputError
         ? `I could not produce a valid interface in ${ATTEMPTS} attempts, so ${outcome}. The previous preview and the values you entered are unchanged. Last problem: ${message} Try again, or ask for a smaller or simpler interface. Agent state lists every attempt.`
-        : `The local model run failed: ${message} ${outcome.charAt(0).toUpperCase()}${outcome.slice(1)}; the previous preview and the values you entered are unchanged.`,
+        : `The model run failed: ${message} ${outcome.charAt(0).toUpperCase()}${outcome.slice(1)}; the previous preview and the values you entered are unchanged.`,
     );
     events.patch({ stage: "error", diagnostics: [message], elapsedMs });
     events.failed(message);

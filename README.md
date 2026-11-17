@@ -1,8 +1,8 @@
 # Gemma 4 + A2UI Express
 
-A standalone Angular 22 demo of **browser-local inference → A2UI Express → native CopilotKit UI**. Describe an interface in the chat: Gemma streams [A2UI Express](https://a2ui.org/specification/proposals/express/) source, the A2UI SDK compiles it into operations, and CopilotKit renders native Angular components. Submitting a generated form sends the entered values back to the same local agent, which answers inside the existing view.
+A standalone Angular 22 demo of **model inference → A2UI Express → native CopilotKit UI**. Describe an interface in the chat: Gemma or DeepSeek streams [A2UI Express](https://a2ui.org/specification/proposals/express/) source, the A2UI SDK compiles it into operations, and CopilotKit renders native Angular components. Submitting a generated form sends the entered values back to the same agent, which answers inside the existing view.
 
-There is no inference backend and no API key: the model runs in the browser (WebGPU) or in Chrome's built-in Prompt API. _Express_ is the UI language, not Express.js.
+The Gemma and Chrome options run locally without an API key. The optional DeepSeek mode uses a small Node proxy with a server-side key. _Express_ is the UI language, not Express.js.
 
 ## Quick start
 
@@ -22,17 +22,33 @@ Open <http://localhost:4210/> (`pnpm start --port 4211` if the port is taken) in
 
 **Stop** cancels loading or generation. **Reset** starts a fresh conversation and keeps loaded weights. A failed or cancelled run restores the last valid view.
 
+### DeepSeek API
+
+No WebGPU or model download is needed for this option. Copy `.env.example` to `.env`, set `DEEPSEEK_API_KEY` to your **DeepSeek** key, and start two terminals:
+
+```sh
+pnpm api     # Node proxy on 127.0.0.1:4212; reads .env
+pnpm start   # Angular on localhost:4210; forwards /api/deepseek to the proxy
+```
+
+Select **DeepSeek · API**, click **Enable DeepSeek API**, then enter a prompt or select an example. Enabling checks server configuration; authentication and account errors are reported when generation starts. `DEEPSEEK_MODEL` defaults to `deepseek-flash`, the current non-thinking chat model documented by DeepSeek; change it to another supported chat model if needed. The proxy explicitly disables thinking, requests streaming text and caps output at 3,072 tokens. Restart `pnpm api` after changing `.env`.
+
+Keys stay in the proxy, outside the browser bundle and Git. Prompts, UI context and submitted form values are sent to DeepSeek in this mode. Stop aborts the upstream request; interrupted or truncated streams fail and restore the last valid view. No fallback to a different model occurs.
+
+For deployment, run `pnpm api` on the web server and reverse-proxy `/api/deepseek/` to `127.0.0.1:4212` on the same origin as the static app, with response buffering disabled for streaming. The proxy binds to loopback and provides no user authentication: keep it behind your deployment's access control when sharing it. `pnpm preview` serves static files only; use `pnpm start` for local API testing or configure that reverse proxy for a production preview.
+
 ## Models
 
 | Selection                               | Runtime                  | First download      |
 | --------------------------------------- | ------------------------ | ------------------- |
+| DeepSeek API                            | Node proxy · remote API  | None                |
 | Gemma 4 E4B (default, untuned)          | Transformers.js · WebGPU | 4.9 GB              |
 | Gemma 4 E4B · fine-tuned for Express    | Transformers.js · WebGPU | 4.9 GB              |
 | Gemma 4 E2B · fine-tuned for Express    | Transformers.js · WebGPU | 3.1 GB              |
 | WebLLM preview · Gemma 4 E2B fine-tuned | WebLLM · WebGPU          | 2.8 GB, self-hosted |
 | Chrome Prompt API                       | Chrome's on-device model | Managed by Chrome   |
 
-Models load from pinned Hugging Face revisions (see `src/app/domains/inference/data/model-catalog.ts`), and a fine-tune is only used if its published manifest names the pinned adapter. A selected model never falls back to another. Generation is greedy, text-only, capped at 3,072 new tokens, within a 32,768-token context that is checked before inference and never truncated.
+Gemma models load from pinned Hugging Face revisions (see `src/app/domains/inference/data/model-catalog.ts`), and a fine-tune is only used if its published manifest names the pinned adapter. A selected model never falls back to another. Local generation is greedy, text-only, capped at 3,072 new tokens, within a 32,768-token context that is checked before inference and never truncated. DeepSeek enforces its own input context limit and reports API errors without local truncation.
 
 The WebLLM option needs locally converted weights; [`model-tools/`](model-tools/README.md) builds and stages them. [`training/`](training/README.md) retrains the fine-tune with Unsloth.
 
@@ -41,6 +57,8 @@ The WebLLM option needs locally converted weights; [`model-tools/`](model-tools/
 | Command                  | Does                                             |
 | ------------------------ | ------------------------------------------------ |
 | `pnpm start`             | Dev server on port 4210                          |
+| `pnpm api`               | DeepSeek proxy on loopback port 4212             |
+| `pnpm test:api`          | Node proxy tests (no real API requests)          |
 | `pnpm test`              | Unit tests (Vitest)                              |
 | `pnpm typecheck`         | Type-checks the app and its tests                |
 | `pnpm lint:architecture` | Checks the domain boundaries with Sheriff        |
@@ -70,6 +88,7 @@ src/
       inference/                     running models in the browser
         data/                        model catalog, selector, Chrome/Transformers.js/WebLLM adapters
 public/                              favicon and logo
+server/                              optional DeepSeek API proxy and tests
 model-tools/                         WebLLM conversion (Python)
 training/                            Unsloth retraining: data and one script
 vendor/                              locally built CopilotKit and A2UI SDK packages

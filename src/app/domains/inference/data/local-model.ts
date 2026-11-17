@@ -4,7 +4,7 @@
  * runtime altogether. */
 export type ModelAvailability = Availability | "unsupported";
 
-export type ModelBackend = "chrome" | "transformers" | "webllm";
+export type ModelBackend = "chrome" | "transformers" | "webllm" | "deepseek";
 
 export interface ModelInfo {
   backend: ModelBackend;
@@ -16,7 +16,7 @@ export interface ModelInfo {
   quantization?: string;
 }
 
-/** A model that runs in the browser. The agent owns the conversation; a
+/** An inference adapter. The agent owns the conversation; a
  * model receives the complete transcript with every generation. */
 export interface LocalModel {
   readonly info: ModelInfo;

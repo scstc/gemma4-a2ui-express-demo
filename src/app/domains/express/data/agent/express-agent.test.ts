@@ -189,7 +189,7 @@ describe("browser-local CopilotKit agent", () => {
     expect(activities(agent)).toEqual([]);
     expect(model.inputs).toEqual([]);
     expect(assistantText(agent)).toEqual([
-      "The local model run failed: Enable the browser model before generating. Nothing was published; the previous preview and the values you entered are unchanged.",
+      "The model run failed: Enable the selected model before generating. Nothing was published; the previous preview and the values you entered are unchanged.",
     ]);
   });
 

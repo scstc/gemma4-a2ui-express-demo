@@ -5,7 +5,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "ng serve --port 4210",
+    "start": "ng serve --port 4210 --proxy-config proxy.conf.json",
+    "api": "node --env-file-if-exists=.env server/deepseek.mjs",
+    "test:api": "node --test server/*.test.mjs",
     "build": "ng build",
     "test": "vitest run",
     "test:watch": "vitest",

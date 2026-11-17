@@ -7,6 +7,7 @@ export const MODEL_MODES = [
   "finetuned",
   "finetuned-e2b",
   "chrome",
+  "deepseek",
 ] as const;
 export type ModelMode = (typeof MODEL_MODES)[number];
 

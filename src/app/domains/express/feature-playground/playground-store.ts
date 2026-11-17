@@ -66,6 +66,7 @@ export class PlaygroundStore {
   readonly enableLabel = computed(() => {
     const { availability } = this.debug();
     if (availability === "enabled") return "Model enabled";
+    if (this.mode() === "deepseek") return "Enable DeepSeek API";
     return availability === "downloadable"
       ? "Download & enable"
       : "Enable local model";
@@ -77,6 +78,8 @@ export class PlaygroundStore {
   /** Weights are a large download; say so before the user enables them. */
   readonly downloadNotice = computed(() => {
     const { availability, model } = this.debug();
+    if (this.mode() === "deepseek")
+      return "Remote inference · prompts and submitted form values are sent to DeepSeek. No model download required.";
     if (availability === "enabled" || availability === "unsupported") return "";
     if (model?.backend === "webllm")
       return "Experimental MLC fine-tune: ~2.8 GB from the configured site · WebGPU shader-f16 required · caching when available. Slower and less reliable in recorded tests.";
@@ -88,6 +91,7 @@ export class PlaygroundStore {
   });
   readonly modelDetailsUrl = computed(() => {
     const model = this.debug().model;
+    if (this.mode() === "deepseek") return "https://api-docs.deepseek.com/";
     if (model?.backend === "webllm")
       return new URL(WEBLLM_MANIFEST_FILE, webllmModelRoot()).href;
     const fineTune = fineTuneByRepo(model?.model);
